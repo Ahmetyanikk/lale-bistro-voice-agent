@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 
 from app.database import Base, SessionLocal, engine
 from app.routers.tools import router as tools_router
+from app.routers.webhooks import router as webhooks_router
 from app.seed import seed_if_empty
 
 
@@ -22,6 +23,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Lale Bistro Voice Assistant Backend", lifespan=lifespan)
 app.include_router(tools_router)
+app.include_router(webhooks_router)
 
 
 @app.get("/health")

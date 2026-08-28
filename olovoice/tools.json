@@ -1,0 +1,168 @@
+[
+  {
+    "name": "check_availability",
+    "description": "Checks whether a table is available for a given party size and requested date/time at Lale Bistro. Always call this before telling the caller a table is or is not available — never guess. If unavailable, the response includes up to three nearby alternative time slots the caller can be offered instead.",
+    "webhookUrl": "https://YOUR_PUBLIC_DOMAIN/api/tools/check-availability",
+    "method": "POST",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "party_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8,
+          "description": "Number of guests in the party, 1 to 8. Parties larger than 8 are not handled by this tool; offer human follow-up instead."
+        },
+        "requested_time": {
+          "type": "string",
+          "description": "Requested reservation date and time as an ISO 8601 string, e.g. 2026-09-01T19:30:00. No UTC offset means Europe/Istanbul local time."
+        }
+      },
+      "required": ["party_size", "requested_time"],
+      "additionalProperties": false
+    },
+    "headers": {
+      "X-Tool-Secret": "REPLACE_WITH_TOOL_SECRET"
+    },
+    "includeMetadata": true,
+    "metadataKey": "call_context",
+    "timeoutSec": 5,
+    "speakResult": false
+  },
+  {
+    "name": "create_reservation",
+    "description": "Creates a confirmed table reservation at Lale Bistro. Preconditions: call check_availability first and only call this after it returned available=true for the exact same date, time, and party size, AND the caller has explicitly confirmed the repeated-back name, phone number, date, time, and party size out loud. Returns a confirmation_code on success. Safe to retry with the same call automatically — retrying never creates a duplicate reservation.",
+    "webhookUrl": "https://YOUR_PUBLIC_DOMAIN/api/tools/create-reservation",
+    "method": "POST",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "customer_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Full name of the guest the reservation is under."
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 32,
+          "description": "Guest phone number, any common Turkish format (e.g. 0532 123 45 67). Used later to verify identity for lookups and cancellation."
+        },
+        "party_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8,
+          "description": "Number of guests in the party, 1 to 8."
+        },
+        "requested_time": {
+          "type": "string",
+          "description": "Confirmed reservation date and time as an ISO 8601 string, e.g. 2026-09-01T19:30:00. No UTC offset means Europe/Istanbul local time."
+        }
+      },
+      "required": ["customer_name", "phone", "party_size", "requested_time"],
+      "additionalProperties": false
+    },
+    "headers": {
+      "X-Tool-Secret": "REPLACE_WITH_TOOL_SECRET"
+    },
+    "includeMetadata": true,
+    "metadataKey": "call_context",
+    "timeoutSec": 5,
+    "speakResult": false
+  },
+  {
+    "name": "get_reservation",
+    "description": "Looks up an existing reservation by confirmation_code and the phone number on file. Both must match or nothing is returned. Use this to answer questions about an existing reservation. This lookup alone does not authorize cancellation — cancel_reservation still requires its own explicit confirmation.",
+    "webhookUrl": "https://YOUR_PUBLIC_DOMAIN/api/tools/get-reservation",
+    "method": "POST",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "confirmation_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20,
+          "description": "Reservation confirmation code, format LBL-XXXX (e.g. LBL-7K2Q)."
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 32,
+          "description": "Phone number on the reservation, used to verify the caller's identity."
+        }
+      },
+      "required": ["confirmation_code", "phone"],
+      "additionalProperties": false
+    },
+    "headers": {
+      "X-Tool-Secret": "REPLACE_WITH_TOOL_SECRET"
+    },
+    "includeMetadata": true,
+    "metadataKey": "call_context",
+    "timeoutSec": 5,
+    "speakResult": false
+  },
+  {
+    "name": "cancel_reservation",
+    "description": "Cancels an existing reservation identified by confirmation_code and the matching phone number. Preconditions: only call this after identity is verified (get_reservation found a match, or the caller supplied both values correctly) AND the caller has explicitly confirmed they want to cancel that specific reservation. This cannot be undone by the assistant.",
+    "webhookUrl": "https://YOUR_PUBLIC_DOMAIN/api/tools/cancel-reservation",
+    "method": "POST",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "confirmation_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20,
+          "description": "Reservation confirmation code, format LBL-XXXX (e.g. LBL-7K2Q)."
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 32,
+          "description": "Phone number on the reservation, used to verify the caller's identity."
+        }
+      },
+      "required": ["confirmation_code", "phone"],
+      "additionalProperties": false
+    },
+    "headers": {
+      "X-Tool-Secret": "REPLACE_WITH_TOOL_SECRET"
+    },
+    "includeMetadata": true,
+    "metadataKey": "call_context",
+    "timeoutSec": 5,
+    "speakResult": false
+  },
+  {
+    "name": "search_menu",
+    "description": "Searches the Lale Bistro menu by dish name keyword and/or category. Both parameters are optional; omit both to list menu highlights. Use this to answer menu questions, never invent dishes or prices that aren't returned by this tool.",
+    "webhookUrl": "https://YOUR_PUBLIC_DOMAIN/api/tools/search-menu",
+    "method": "POST",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Free-text dish name keyword to search for, e.g. 'kebap'. Omit to not filter by name."
+        },
+        "category": {
+          "type": "string",
+          "maxLength": 60,
+          "description": "Menu category to filter by, e.g. 'Tatlı' (dessert) or 'Çorba' (soup). Omit to not filter by category."
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "headers": {
+      "X-Tool-Secret": "REPLACE_WITH_TOOL_SECRET"
+    },
+    "includeMetadata": true,
+    "metadataKey": "call_context",
+    "timeoutSec": 5,
+    "speakResult": false
+  }
+]

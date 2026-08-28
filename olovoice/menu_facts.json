@@ -1,0 +1,12 @@
+[
+  {"name": "Mercimek Çorbası", "category": "Çorba", "price": 120.0, "vegetarian": true},
+  {"name": "Ezogelin Çorbası", "category": "Çorba", "price": 120.0, "vegetarian": true},
+  {"name": "Adana Kebap", "category": "Ana Yemek", "price": 380.0, "vegetarian": false},
+  {"name": "Karışık Izgara", "category": "Ana Yemek", "price": 520.0, "vegetarian": false},
+  {"name": "Etli Güveç", "category": "Ana Yemek", "price": 340.0, "vegetarian": false},
+  {"name": "Mevsim Salata", "category": "Salata", "price": 160.0, "vegetarian": true},
+  {"name": "Baklava", "category": "Tatlı", "price": 220.0, "vegetarian": true},
+  {"name": "Künefe", "category": "Tatlı", "price": 210.0, "vegetarian": true},
+  {"name": "Ayran", "category": "İçecek", "price": 60.0, "vegetarian": true},
+  {"name": "Türk Kahvesi", "category": "İçecek", "price": 90.0, "vegetarian": true}
+]

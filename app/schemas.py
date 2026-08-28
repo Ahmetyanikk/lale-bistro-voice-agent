@@ -1,15 +1,21 @@
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
 
 class ToolRequestBase(BaseModel):
-    # forbid extra: OloVoice sends exactly the declared fields, nothing more.
+    # forbid extra: only OloVoice's own injected fields (tool_call_id,
+    # call_context) and each tool's declared business fields are allowed —
+    # anything else is a genuinely unknown field and still 422s.
     # (not model-level strict=True: JSON has no datetime type, and strict
     # mode rejects the ISO8601 strings that requests actually send.)
     model_config = ConfigDict(extra="forbid")
 
     tool_call_id: str = Field(min_length=1, max_length=100)
+    # added by OloVoice when includeMetadata=true; the model never generates
+    # this, so it's excluded from every tool's inputSchema in tools.json.
+    call_context: dict[str, Any] | None = None
 
 
 class CheckAvailabilityRequest(ToolRequestBase):
@@ -92,3 +98,8 @@ class SearchMenuResponse(BaseModel):
     tool_call_id: str
     count: int
     items: list[MenuItemOut]
+
+
+class EndOfCallWebhookResponse(BaseModel):
+    received: bool
+    duplicate: bool

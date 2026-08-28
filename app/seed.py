@@ -6,17 +6,30 @@ from app.models import MenuItem, RestaurantTable
 TABLE_CAPACITIES = [2, 2, 4, 4, 4, 6, 8]
 
 MENU_ITEMS = [
-    ("Mercimek Corbasi", "Corba", 120.0, "Klasik kirmizi mercimek corbasi"),
-    ("Ezogelin Corbasi", "Corba", 120.0, "Bulgur ve mercimekli baharatli corba"),
-    ("Adana Kebap", "Ana Yemek", 380.0, "Acili izgara kiyma kebabi"),
-    ("Karisik Izgara", "Ana Yemek", 520.0, "Kuzu pirzola, tavuk sis ve kofte"),
-    ("Etli Guvec", "Ana Yemek", 340.0, "Firinda pisirilmis kuzu etli sebze guveci"),
-    ("Mevsim Salata", "Salata", 160.0, "Taze mevsim yesillikleri"),
-    ("Baklava", "Tatli", 220.0, "Fistikli geleneksel baklava"),
-    ("Kunefe", "Tatli", 210.0, "Peynirli tel kadayif tatlisi"),
-    ("Ayran", "Icecek", 60.0, "Ev yapimi yayik ayrani"),
-    ("Turk Kahvesi", "Icecek", 90.0, "Geleneksel turk kahvesi"),
+    ("Mercimek Çorbası", "Çorba", 120.0, "Klasik kırmızı mercimek çorbası"),
+    ("Ezogelin Çorbası", "Çorba", 120.0, "Bulgur ve mercimekli baharatlı çorba"),
+    ("Adana Kebap", "Ana Yemek", 380.0, "Acılı ızgara kıyma kebabı"),
+    # "Izgara" (capital dotless I) is the correct Turkish capitalization of
+    # "ızgara" here — not a leftover ASCII workaround.
+    ("Karışık Izgara", "Ana Yemek", 520.0, "Kuzu pirzola, tavuk şiş ve köfte"),
+    ("Etli Güveç", "Ana Yemek", 340.0, "Fırında pişirilmiş kuzu etli sebze güveci"),
+    ("Mevsim Salata", "Salata", 160.0, "Taze mevsim yeşillikleri"),
+    ("Baklava", "Tatlı", 220.0, "Fıstıklı geleneksel baklava"),
+    ("Künefe", "Tatlı", 210.0, "Peynirli tel kadayıf tatlısı"),
+    ("Ayran", "İçecek", 60.0, "Ev yapımı yayık ayranı"),
+    ("Türk Kahvesi", "İçecek", 90.0, "Geleneksel türk kahvesi"),
 ]
+
+# vegetarian flag mirrors olovoice/knowledge_base.md and olovoice/menu_facts.json
+VEGETARIAN_ITEMS = {
+    "Mercimek Çorbası",
+    "Ezogelin Çorbası",
+    "Mevsim Salata",
+    "Baklava",
+    "Künefe",
+    "Ayran",
+    "Türk Kahvesi",
+}
 
 
 def seed_if_empty(db: Session) -> None:

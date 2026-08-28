@@ -1,0 +1,79 @@
+{
+  "type": "object",
+  "description": "Per-call structured extraction for Lale Bistro Reservation Assistant calls. Field names are snake_case for backend analytics, independent of OloVoice's own camelCase tool-config convention.",
+  "properties": {
+    "intent": {
+      "type": "string",
+      "description": "Primary caller intent handled during this call.",
+      "enum": [
+        "check_availability",
+        "create_reservation",
+        "get_reservation",
+        "cancel_reservation",
+        "search_menu",
+        "general_inquiry",
+        "out_of_scope",
+        "other"
+      ]
+    },
+    "call_outcome": {
+      "type": "string",
+      "description": "What actually happened by the end of the call.",
+      "enum": [
+        "reservation_created",
+        "reservation_cancelled",
+        "reservation_found",
+        "availability_checked",
+        "menu_info_provided",
+        "no_action_taken",
+        "escalated_to_human",
+        "failed"
+      ]
+    },
+    "reservation_code": {
+      "type": ["string", "null"],
+      "pattern": "^LBL-[A-Z0-9]{4}$",
+      "description": "Confirmation code involved in this call, if any (created, looked up, or cancelled). Null if none."
+    },
+    "reservation_date": {
+      "type": ["string", "null"],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Reservation date in YYYY-MM-DD (Europe/Istanbul), if applicable. Null if none."
+    },
+    "reservation_time": {
+      "type": ["string", "null"],
+      "pattern": "^\\d{2}:\\d{2}$",
+      "description": "Reservation start time in 24-hour HH:MM (Europe/Istanbul), if applicable. Null if none."
+    },
+    "party_size": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "maximum": 8,
+      "description": "Party size discussed, if applicable. Null if none (including parties larger than 8, which this backend does not handle online)."
+    },
+    "tool_succeeded": {
+      "type": "boolean",
+      "description": "True if the relevant backend tool call(s) completed successfully with the desired outcome; false on tool failure, timeout, or business rejection (e.g. no availability)."
+    },
+    "human_followup_required": {
+      "type": "boolean",
+      "description": "True if the caller should be followed up with by a human (party > 8, repeated tool failure, explicit request for a human, complaint, or other situation out of the assistant's scope)."
+    },
+    "failure_reason": {
+      "type": ["string", "null"],
+      "description": "Short machine-readable failure code when tool_succeeded is false or call_outcome is 'failed', e.g. no_availability, closed_monday, outside_opening_hours, past_time, not_found, tool_timeout, tool_error. Null when not applicable."
+    }
+  },
+  "required": [
+    "intent",
+    "call_outcome",
+    "reservation_code",
+    "reservation_date",
+    "reservation_time",
+    "party_size",
+    "tool_succeeded",
+    "human_followup_required",
+    "failure_reason"
+  ],
+  "additionalProperties": false
+}
