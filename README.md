@@ -31,6 +31,7 @@ pytest
 | Variable                    | Required | Default                    | Read by                          |
 |------------------------------|----------|-----------------------------|-----------------------------------|
 | `TOOL_SECRET`                | yes      | —                            | this backend (`app/config.py`)   |
+| `OLOVOICE_TOOL_TOKEN`        | no       | —                            | temporary saved-tool URL fallback |
 | `DATABASE_URL`               | no       | `sqlite:///./lale_bistro.db` | this backend                     |
 | `OLOVOICE_API_KEY`           | no       | —                            | not used yet (see below)         |
 | `BASE_URL`                   | no       | —                            | `scripts/smoke_test.py`, dashboard setup |
@@ -40,8 +41,14 @@ pytest
 
 **`TOOL_SECRET` vs `OLOVOICE_API_KEY` — these authenticate opposite
 directions and must never be the same value:**
-- `TOOL_SECRET` authenticates **OloVoice calling us** — every
-  `/api/tools/*` request must carry header `X-Tool-Secret: <TOOL_SECRET>`.
+- `TOOL_SECRET` authenticates **OloVoice calling us** — normally every
+  `/api/tools/*` request carries header `X-Tool-Secret: <TOOL_SECRET>`.
+- If the OloVoice saved-tool dashboard does not expose custom headers, set a
+  separate short-lived `OLOVOICE_TOOL_TOKEN` and append
+  `?tool_token=<OLOVOICE_TOOL_TOKEN>` to each saved tool's webhook URL. This
+  fallback is disabled when the variable is unset. Query strings may appear in
+  private infrastructure logs, so never reuse `TOOL_SECRET` here and rotate the
+  token after the demo.
   `/health` and the end-of-call webhook do not require it.
 - `OLOVOICE_API_KEY` would authenticate **our code calling OloVoice's own
   API** (e.g. to create/update the assistant programmatically). Nothing in

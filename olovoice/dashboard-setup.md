@@ -105,6 +105,18 @@ the actual secret configured on your backend deployment. Never commit this
 real value to the repository — it only lives in the OloVoice dashboard and
 your deployment's environment variables.
 
+If the saved-tool dashboard editor does not expose custom request headers,
+use the explicit demo fallback instead:
+
+1. Generate a separate random value and configure it on the backend as
+   `OLOVOICE_TOOL_TOKEN`. Do not reuse `TOOL_SECRET`.
+2. Append `?tool_token=<OLOVOICE_TOOL_TOKEN>` to each saved tool's
+   `webhookUrl`.
+3. Rotate or remove `OLOVOICE_TOOL_TOKEN` after the demo. The fallback is
+   disabled whenever that environment variable is absent. Query strings can
+   appear in private infrastructure logs, which is why this is a short-lived
+   compatibility fallback rather than the preferred production mechanism.
+
 ## 8. Add structured output
 
 1. Open the assistant's **Structured Output** (or "Analysis Schema")

@@ -32,6 +32,14 @@ voice/STT/TTS/LLM; this service only exposes tool webhooks over HTTP.
   external AI providers.** Anything that looks like one of these outside
   this phase's stated scope is out of bounds; flag it instead of adding it.
 - **No Alembic.** SQLite demo uses `Base.metadata.create_all` on startup.
+- **Tool authentication stays fail-closed by default.** The preferred path
+  is `X-Tool-Secret: <TOOL_SECRET>`. Because the current OloVoice saved-tool
+  dashboard does not expose custom headers, `app/security.py` also accepts a
+  `tool_token` query parameter only when a separate
+  `OLOVOICE_TOOL_TOKEN` environment variable is explicitly configured.
+  Never reuse `TOOL_SECRET` as that token; remove or rotate the fallback
+  after the demo because query strings can appear in private infrastructure
+  logs.
 - **Naming domains don't mix.** Three separate conventions coexist on
   purpose: OloVoice's own tool-config wrapper keys are camelCase
   (`webhookUrl`, `includeMetadata`, …); the JSON body fields inside
@@ -79,11 +87,11 @@ voice/STT/TTS/LLM; this service only exposes tool webhooks over HTTP.
 ```
 app/
   main.py           FastAPI app, lifespan (create tables + seed), /health
-  config.py         env-driven settings (TOOL_SECRET, DATABASE_URL)
+  config.py         env-driven settings (tool secrets, DATABASE_URL)
   database.py       engine/session/Base
   models.py         SQLAlchemy models: RestaurantTable, Reservation, MenuItem
   schemas.py        Pydantic v2 request/response models (strict, extra=forbid)
-  security.py       X-Tool-Secret dependency
+  security.py       header auth + optional saved-tool query-token fallback
   seed.py           table + menu seed data
   timeutil.py       Europe/Istanbul helpers
   services/
