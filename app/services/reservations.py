@@ -12,7 +12,11 @@ from app.services.availability import (
     suggest_alternatives,
     validate_requested_time,
 )
-from app.services.codes import generate_confirmation_code
+from app.services.codes import (
+    confirmation_code_lookup_values,
+    generate_confirmation_code,
+    normalize_confirmation_code,
+)
 from app.services.phone import normalize_turkish_phone
 from app.timeutil import to_naive_istanbul
 
@@ -27,7 +31,9 @@ def _unique_code(db: Session) -> str:
     for _ in range(20):
         code = generate_confirmation_code()
         exists = db.execute(
-            select(Reservation.id).where(Reservation.confirmation_code == code)
+            select(Reservation.id).where(
+                Reservation.confirmation_code.in_(confirmation_code_lookup_values(code))
+            )
         ).first()
         if not exists:
             return code
@@ -41,7 +47,7 @@ def _existing_to_result(existing: Reservation) -> dict:
         "table": existing.table,
         "start": existing.start_time,
         "end": existing.end_time,
-        "code": existing.confirmation_code,
+        "code": normalize_confirmation_code(existing.confirmation_code),
         "alternatives": [],
     }
 
@@ -128,10 +134,10 @@ def create_reservation(
 
 def get_reservation(db: Session, confirmation_code: str, phone: str) -> Reservation | None:
     phone_norm = normalize_turkish_phone(phone)
-    code = confirmation_code.strip().upper()
+    code_values = confirmation_code_lookup_values(confirmation_code)
     return db.execute(
         select(Reservation).where(
-            Reservation.confirmation_code == code,
+            Reservation.confirmation_code.in_(code_values),
             Reservation.phone == phone_norm,
         )
     ).scalar_one_or_none()

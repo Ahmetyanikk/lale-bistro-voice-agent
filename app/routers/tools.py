@@ -17,6 +17,7 @@ from app.schemas import (
 )
 from app.security import require_tool_secret
 from app.services import menu, reservations
+from app.services.codes import normalize_confirmation_code
 from app.timeutil import to_aware_istanbul, to_naive_istanbul
 
 router = APIRouter(prefix="/api/tools", dependencies=[Depends(require_tool_secret)])
@@ -69,7 +70,7 @@ def get_reservation(payload: GetReservationRequest, db: Session = Depends(get_db
     return GetReservationResponse(
         tool_call_id=payload.tool_call_id,
         found=True,
-        confirmation_code=reservation.confirmation_code,
+        confirmation_code=normalize_confirmation_code(reservation.confirmation_code),
         status=reservation.status.value,
         customer_name=reservation.customer_name,
         phone=reservation.phone,
@@ -85,7 +86,11 @@ def cancel_reservation(payload: CancelReservationRequest, db: Session = Depends(
     cancelled, reason, reservation = reservations.cancel_reservation(
         db, payload.confirmation_code, payload.phone
     )
-    code = reservation.confirmation_code if reservation else payload.confirmation_code.strip().upper()
+    code = (
+        normalize_confirmation_code(reservation.confirmation_code)
+        if reservation
+        else normalize_confirmation_code(payload.confirmation_code)
+    )
     return CancelReservationResponse(
         tool_call_id=payload.tool_call_id,
         cancelled=cancelled,

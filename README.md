@@ -81,11 +81,11 @@ curl -s -X POST http://localhost:8000/api/tools/create-reservation \
 
 curl -s -X POST http://localhost:8000/api/tools/get-reservation \
   -H "X-Tool-Secret: $SECRET" -H "Content-Type: application/json" \
-  -d '{"tool_call_id":"call-3","confirmation_code":"LBL-7K2Q","phone":"0532 123 45 67"}'
+  -d '{"tool_call_id":"call-3","confirmation_code":"7K2Q","phone":"0532 123 45 67"}'
 
 curl -s -X POST http://localhost:8000/api/tools/cancel-reservation \
   -H "X-Tool-Secret: $SECRET" -H "Content-Type: application/json" \
-  -d '{"tool_call_id":"call-4","confirmation_code":"LBL-7K2Q","phone":"0532 123 45 67"}'
+  -d '{"tool_call_id":"call-4","confirmation_code":"7K2Q","phone":"0532 123 45 67"}'
 
 curl -s -X POST http://localhost:8000/api/tools/search-menu \
   -H "X-Tool-Secret: $SECRET" -H "Content-Type: application/json" \

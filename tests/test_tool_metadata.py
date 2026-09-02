@@ -18,8 +18,8 @@ TOOL_CASES = [
         {"customer_name": "Ali Veli", "phone": "05321234567", "party_size": 2},
         True,
     ),
-    ("/api/tools/get-reservation", {"confirmation_code": "LBL-0000", "phone": "05321234567"}, False),
-    ("/api/tools/cancel-reservation", {"confirmation_code": "LBL-0000", "phone": "05321234567"}, False),
+    ("/api/tools/get-reservation", {"confirmation_code": "7K2Q", "phone": "05321234567"}, False),
+    ("/api/tools/cancel-reservation", {"confirmation_code": "7K2Q", "phone": "05321234567"}, False),
     ("/api/tools/search-menu", {"query": "kebap"}, False),
 ]
 

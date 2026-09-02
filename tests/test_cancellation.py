@@ -65,3 +65,32 @@ def test_cancel_wrong_phone_rejected(client, headers):
     ).json()
     assert cancel["cancelled"] is False
     assert cancel["reason"] == "not_found"
+
+
+def test_cancel_accepts_legacy_lbl_prefix(client, headers):
+    dt = next_open_datetime(hour=18, minute=30)
+    create = client.post(
+        "/api/tools/create-reservation",
+        json={
+            "tool_call_id": "cancel-prefix",
+            "customer_name": "Can",
+            "phone": "05341112255",
+            "party_size": 2,
+            "requested_time": dt.isoformat(),
+        },
+        headers=headers,
+    ).json()
+
+    response = client.post(
+        "/api/tools/cancel-reservation",
+        json={
+            "tool_call_id": "cancel-prefix-call",
+            "confirmation_code": f"LBL-{create['confirmation_code']}",
+            "phone": "05341112255",
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    assert response.json()["cancelled"] is True
+    assert response.json()["confirmation_code"] == create["confirmation_code"]

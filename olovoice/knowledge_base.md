@@ -34,8 +34,8 @@ Her rezervasyon, masayı **90 dakika** boyunca ayırır.
 
 - Rezervasyon oluşturmak için ad soyad, telefon numarası, tarih, saat ve
   kişi sayısı yeterlidir; ön ödeme veya kredi kartı istenmez.
-- Başarılı bir rezervasyon, "LBL-" ile başlayan 4 karakterli bir onay kodu
-  ile teyit edilir (örn. LBL-7K2Q).
+- Başarılı bir rezervasyon, 4 karakterli bir onay koduyla teyit edilir
+  (örn. 7K2Q).
 - Bir rezervasyonu sorgulamak veya iptal etmek için **onay kodu ve
   rezervasyondaki telefon numarasının aynı anda eşleşmesi** gerekir.
 - İptal edilen bir rezervasyon, ilgili masayı o zaman aralığı için tekrar

@@ -1,5 +1,7 @@
 from datetime import timedelta
 
+from app.services.codes import CODE_ALPHABET
+
 from .timehelpers import next_open_datetime
 
 
@@ -19,7 +21,8 @@ def test_successful_reservation(client, headers):
     assert r.status_code == 200
     body = r.json()
     assert body["status"] == "confirmed"
-    assert body["confirmation_code"].startswith("LBL-")
+    assert len(body["confirmation_code"]) == 4
+    assert all(character in CODE_ALPHABET for character in body["confirmation_code"])
     assert body["table_label"] is not None
 
 
@@ -81,6 +84,35 @@ def test_lookup_matching_identity(client, headers):
     body = r.json()
     assert body["found"] is True
     assert body["confirmation_code"] == create["confirmation_code"]
+
+
+def test_lookup_accepts_legacy_lbl_prefix(client, headers):
+    dt = next_open_datetime(hour=13, minute=30)
+    create = client.post(
+        "/api/tools/create-reservation",
+        json={
+            "tool_call_id": "res-prefix-get",
+            "customer_name": "Selin",
+            "phone": "05321112244",
+            "party_size": 2,
+            "requested_time": dt.isoformat(),
+        },
+        headers=headers,
+    ).json()
+
+    response = client.post(
+        "/api/tools/get-reservation",
+        json={
+            "tool_call_id": "res-prefix-get-lookup",
+            "confirmation_code": f"LBL-{create['confirmation_code'].lower()}",
+            "phone": "05321112244",
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    assert response.json()["found"] is True
+    assert response.json()["confirmation_code"] == create["confirmation_code"]
 
 
 def test_lookup_wrong_phone_rejected(client, headers):

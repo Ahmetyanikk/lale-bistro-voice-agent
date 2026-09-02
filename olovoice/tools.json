@@ -83,7 +83,7 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 20,
-          "description": "Reservation confirmation code, format LBL-XXXX (e.g. LBL-7K2Q)."
+          "description": "Four-character reservation confirmation code (e.g. 7K2Q). Do not add a prefix."
         },
         "phone": {
           "type": "string",
@@ -115,7 +115,7 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 20,
-          "description": "Reservation confirmation code, format LBL-XXXX (e.g. LBL-7K2Q)."
+          "description": "Four-character reservation confirmation code (e.g. 7K2Q). Do not add a prefix."
         },
         "phone": {
           "type": "string",
